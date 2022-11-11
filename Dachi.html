@@ -1,25 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./style.css">
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.38.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.38.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        h2, h3 {
+            margin: 10px;
+            font-size: 1.2em;
+        }
+        h3 {
+            font-size: 1em;
+        }
+        p {
+            font-size: 0.85em;
+            margin: 10px;
+            text-align: left;
+        }
+        .map-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.8);
+            margin-right: 20px;
+            font-family: Arial, sans-serif;
+            overflow: auto;
+            border-radius: 3px;
+        }
+        #map {
+            position:absolute;
+            top:0;
+            bottom:0;
+            width:100%;
+        }
+        #features {
+            top: 0;
+            height: 200px;
+            margin-top: 20px;
+            width: 300px;
+        }
+        #legend {
+            padding: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+            line-height: 18px;
+            height: 150px;
+            margin-bottom: 40px;
+            width: 100px;
+        }
+        .legend-key {
+            display:inline-block;
+            border-radius: 20%;
+            width: 10px;
+            height: 10px;
+            margin-right: 5px;
+        }
+
+    </style>
 </head>
 <body>
 
-    <div id="map"></div>
-    <div class="map-overlay" id="features"><h2>Результати</h2><div id="pd"><p>проведення інвентаризації земель дачного масиву, що розташований в межах с. Кам’яниця Ужгородського району Закарпатської області на замовлення Кам’яницької сільської ради (!!!При виявленні розбіжностей/невідповідностей даних пррохання повідомити землевпорядника з зазначенням ID ділянки)</p></div></div>
+<div id='map'></div>
+<div class='map-overlay' id='features'><h2>Результати</h2><div id='pd'><p>проведення інвентаризації земель дачного масиву, що розташований в межах с. Кам’яниця Ужгородського району Закарпатської області на замовлення Кам’яницької сільської ради (!!!При виявленні розбіжностей/невідповідностей даних пррохання повідомити землевпорядника з зазначенням ID ділянки)</p></div></div>
 
 
-    <script src="./index.js"></script>
-    
+<script>
+mapboxgl.accessToken = 'pk.eyJ1Ijoidml0amF6enoiLCJhIjoiY2l3c3liZnZpMDBiZTJ6bWFpbDA5Ym1hcyJ9.T6cpNveIfkobDqFaNCkYww';
+var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/vitjazzz/cj5cn9atm09wc2smv3uola3r7', //hosted style id
+    center: [22.400153,48.698639], // starting position
+    zoom: 15 // starting zoom
+
+});
+
+// Add geolocate control to the map.
+map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+        enableHighAccuracy: true
+    },
+    trackUserLocation: true
+}));
+
+map.on('load', function () {
+    // Add a layer showing the state polygons.
+    map.addLayer({
+        'id': 'da4',
+		//'description':'PIB',
+		
+    });
+
+// When a click event occurs on a feature in the states layer, open a popup at the
+    // location of the click, with description HTML from its properties.
+    map.on('click', 'da4', function (e) {
+        
+		new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+ //           .setHTML(e.features[0].properties.description)
+    		.setHTML('ID '+ e.features[0].properties.IR +'</p>'+ e.features[0].properties.PIB + '</p>'+ e.features[0].properties.ADR+'</p>'+ e.features[0].properties.SN+'</p>'+ e.features[0].properties.Number)
+            .addTo(map);
+    });
+
+    // Change the cursor to a pointer when the mouse is over the states layer.
+    map.on('mouseenter', 'da4', function () {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a pointer when it leaves.
+    map.on('mouseleave', 'da4', function () {
+        map.getCanvas().style.cursor = '';
+    });
+});
+</script>
+
 </body>
 </html>
-
-
-<!-- https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css -->
-<!-- https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js -->
